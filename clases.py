@@ -1,7 +1,7 @@
-class ObjetoTemporal:
-    def __init__(self, id):
+class Alumno:
+    def __init__(self, id, estado, maquina=None):
         self.id = id
-        self.estado = "Inicial"
+        self.estado = estado
         self.recurso_asignado = None
 
     def asignar_recurso(self, recurso):
@@ -9,8 +9,9 @@ class ObjetoTemporal:
         self.estado = "En proceso"
 
 
-class Recurso:
+class Servidor:
     def __init__(self, nombre, tiempo_proceso):
         self.nombre = nombre
         self.libre = True
         self.tiempo_proceso = tiempo_proceso
+        self.proximo_fin = None

@@ -8,43 +8,25 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            line-height: 1.6;
         }
-
-        h1, h2 {
-            text-align: center;
-            color: #333;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
             font-size: 14px;
-            text-align: left;
         }
-
-        table th, table td {
+        th, td {
             border: 1px solid #ddd;
             padding: 8px;
+            text-align: center;
         }
-
-        table th {
+        th {
             background-color: #f4f4f4;
-            color: #333;
-            text-align: center;
         }
-
-        .metrics {
-            margin: 20px auto;
-            width: 50%;
-            text-align: center;
-        }
-
-        .metrics p {
-            font-size: 16px;
-            margin: 10px 0;
-        }
+        /* Colores de secciones */
+        .section-llegada { background-color: #ffebf1; } /* Rosa claro */
+        .section-inscripcion { background-color: #e8d8ff; } /* Violeta claro */
+        .section-mantenimiento { background-color: #d8eaff; } /* Azul claro */
+        .section-cola { background-color: #fffacd; } /* Amarillo claro */
     </style>
 </head>
 <body>
@@ -52,35 +34,53 @@
     <table>
         <thead>
             <tr>
-                <th>Reloj</th>
-                <th>Evento</th>
-                <th>Cola</th>
-                {% for i in range(num_equipos) %}
-                <th>Equipo {{ i + 1 }}</th>
-                <th>Alumno {{ i + 1 }}
-                    <th>Estado</th>
-                </th>
-                {% endfor %}
+                <th rowspan="2">#</th>
+                <th rowspan="2">Evento</th>
+                <th rowspan="2">Reloj</th>
+                <!-- Encabezados jerárquicos -->
+                <th colspan="4" class="section-llegada">Llegada Alumno</th>
+                <th colspan="3" class="section-inscripcion">Fin Inscripción</th>
+                <th colspan="3" class="section-mantenimiento">Mantenimiento</th>
+                <th rowspan="2" class="section-cola">Cola</th>
+            </tr>
+            <tr>
+                <!-- Subencabezados -->
+                <th class="section-llegada">RND Llegada</th>
+                <th class="section-llegada">Tiempo Llegada</th>
+                <th class="section-llegada">Próxima Llegada</th>
+                <th class="section-llegada">Máquina</th>
+                <th class="section-inscripcion">RND Inscripción</th>
+                <th class="section-inscripcion">Tiempo Inscripción</th>
+                <th class="section-inscripcion">Fin Inscripción</th>
+                <th class="section-mantenimiento">RND Mantenimiento</th>
+                <th class="section-mantenimiento">Tiempo Mantenimiento</th>
+                <th class="section-mantenimiento">Fin Mantenimiento</th>
             </tr>
         </thead>
         <tbody>
             {% for fila in tabla %}
             <tr>
-                <td>{{ fila['reloj'] }}</td>
-                <td>{{ fila['evento'] }}</td>
-                <td>{{ fila['cola'] }}</td>
-                {% for equipo in fila['equipos'] %}
-                <td>{{ equipo }}</td>
-                {% endfor %}
+                <td>{{ loop.index }}</td>
+                <td>{{ fila['Evento'] }}</td>
+                <td>{{ fila['Reloj'] }}</td>
+                <!-- Llegada -->
+                <td class="section-llegada">{{ fila.get('RND Llegada', 'N/A') }}</td>
+                <td class="section-llegada">{{ fila.get('Tiempo Llegada', 'N/A') }}</td>
+                <td class="section-llegada">{{ fila.get('Próxima Llegada', 'N/A') }}</td>
+                <td class="section-llegada">{{ fila.get('Máquina', 'N/A') }}</td>
+                <!-- Inscripción -->
+                <td class="section-inscripcion">{{ fila.get('RND Inscripción', 'N/A') }}</td>
+                <td class="section-inscripcion">{{ fila.get('Tiempo Inscripción', 'N/A') }}</td>
+                <td class="section-inscripcion">{{ fila.get('Fin Inscripción', 'N/A') }}</td>
+                <!-- Mantenimiento -->
+                <td class="section-mantenimiento">{{ fila.get('RND Mantenimiento', 'N/A') }}</td>
+                <td class="section-mantenimiento">{{ fila.get('Tiempo Mantenimiento', 'N/A') }}</td>
+                <td class="section-mantenimiento">{{ fila.get('Fin Mantenimiento', 'N/A') }}</td>
+                <!-- Cola -->
+                <td class="section-cola">{{ fila.get('Cola', 'N/A') }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <div class="metrics">
-        <h2>Métricas Finales</h2>
-        <p><strong>Tiempo promedio de espera:</strong> {{ tiempo_promedio_espera }} minutos</p>
-        <p><strong>Porcentaje de alumnos que se fueron:</strong> {{ porcentaje_se_fueron }}%</p>
-    </div>
 </body>
 </html>

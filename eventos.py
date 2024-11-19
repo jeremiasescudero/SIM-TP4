@@ -36,7 +36,7 @@ class Llegada(Evento):
     def make(self, estadisticas, eventos, objetos_temporales, recursos):
         super().make(estadisticas)
         estadisticas['contador_eventos'] += 1
-        nuevo_objeto = ObjetoTemporal(estadisticas['contador_eventos'])
+        nuevo_objeto = Alumno(estadisticas['contador_eventos'])
         objetos_temporales.append(nuevo_objeto)
 
         recurso_disponible = next((recurso for recurso in recursos if recurso.libre), None)
