@@ -163,6 +163,10 @@ def simular(
             'Cola': len([alumno for alumno in alumnos if alumno['estado'] == 'En cola']),
         }
 
+         # AGREGAR ESTADO DE LAS MÁQUINAS
+        for i, maquina in enumerate(maquinas):
+            fila[f'Máquina {i} Estado'] = maquina['estado']  # Agregar el estado de cada máquina
+
         # Añadir datos para cada alumno dinámicamente
         for idx, alumno in enumerate(alumnos, start=1):
             fila[f'A{idx}'] = {
@@ -182,6 +186,7 @@ def simular(
             'RND Mantenimiento': getattr(evento_actual, 'rnd_mantenimiento', 'N/A'),
             'Tiempo Mantenimiento': getattr(evento_actual, 'tiempo_mantenimiento', 'N/A'),
             'Fin Mantenimiento': getattr(evento_actual, 'hora', 'N/A'),
+            
         })
 
         tabla_resultados.append(fila)
