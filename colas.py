@@ -166,16 +166,16 @@ def simular(
             'Cola': len([alumno for alumno in alumnos if alumno['estado'] == 'En cola']),
         }
 
-        # Actualizar columnas fijas para alumnos (A1, A2, ..., Amax_cola)
-        for idx in range(max_cola):
-            if idx < len(alumnos):
-                alumno = alumnos[idx]
-                fila[f'A{idx + 1}'] = {
-                    'Estado': alumno['estado'],
-                    'Tiempo de Espera': round(reloj - alumno['hora_llegada'], 2) if alumno['estado'] == 'En cola' else 0
-                }
-            else:
-                fila[f'A{idx + 1}'] = {'Estado': 'N/A', 'Tiempo de Espera': 'N/A'}
+         # AGREGAR ESTADO DE LAS MÁQUINAS
+        for i, maquina in enumerate(maquinas):
+            fila[f'Máquina {i} Estado'] = maquina['estado']  # Agregar el estado de cada máquina
+
+        # Añadir datos para cada alumno dinámicamente
+        for idx, alumno in enumerate(alumnos, start=1):
+            fila[f'A{idx}'] = {
+                'Estado': alumno['estado'],
+                'Tiempo de Espera': round(reloj - alumno['hora_llegada'], 2) if alumno['estado'] == 'En cola' else 0
+            }
 
         # Añadir datos de eventos (llegadas, inscripciones, mantenimientos)
         fila.update({
@@ -189,6 +189,7 @@ def simular(
             'RND Mantenimiento': getattr(evento_actual, 'rnd_mantenimiento', 'N/A'),
             'Tiempo Mantenimiento': getattr(evento_actual, 'tiempo_mantenimiento', 'N/A'),
             'Fin Mantenimiento': getattr(evento_actual, 'hora', 'N/A'),
+            
         })
 
         tabla_resultados.append(fila)

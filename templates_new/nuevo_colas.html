@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -27,6 +27,8 @@
         .section-inscripcion { background-color: #e8d8ff; } /* Violeta claro */
         .section-mantenimiento { background-color: #d8eaff; } /* Azul claro */
         .section-cola { background-color: #fffacd; } /* Amarillo claro */
+        .section-maquina { background-color: #e0f7fa; } /* Azul claro para máquinas */
+        .section-estudiantes { background-color: #f1f8e9; } /* Verde claro para estudiantes */
     </style>
 </head>
 <body>
@@ -41,6 +43,7 @@
                 <th colspan="4" class="section-llegada">Llegada Alumno</th>
                 <th colspan="3" class="section-inscripcion">Fin Inscripción</th>
                 <th colspan="3" class="section-mantenimiento">Mantenimiento</th>
+                <th colspan="6" class="section-maquina">Estado Máquinas</th>
                 <th rowspan="2" class="section-cola">Cola</th>
             </tr>
             <tr>
@@ -55,6 +58,12 @@
                 <th class="section-mantenimiento">RND Mantenimiento</th>
                 <th class="section-mantenimiento">Tiempo Mantenimiento</th>
                 <th class="section-mantenimiento">Fin Mantenimiento</th>
+                <th class="section-maquina">Máquina 1</th>
+                <th class="section-maquina">Máquina 2</th>
+                <th class="section-maquina">Máquina 3</th>
+                <th class="section-maquina">Máquina 4</th>
+                <th class="section-maquina">Máquina 5</th>
+                <th class="section-maquina">Máquina 6</th>
             </tr>
         </thead>
         <tbody>
@@ -76,8 +85,17 @@
                 <td class="section-mantenimiento">{{ fila.get('RND Mantenimiento', 'N/A') }}</td>
                 <td class="section-mantenimiento">{{ fila.get('Tiempo Mantenimiento', 'N/A') }}</td>
                 <td class="section-mantenimiento">{{ fila.get('Fin Mantenimiento', 'N/A') }}</td>
+                <!-- Estado de las máquinas -->
+                <td class="section-maquina">{{ fila.get('Máquina 1 Estado', 'N/A') }}</td>
+                <td class="section-maquina">{{ fila.get('Máquina 2 Estado', 'N/A') }}</td>
+                <td class="section-maquina">{{ fila.get('Máquina 3 Estado', 'N/A') }}</td>
+                <td class="section-maquina">{{ fila.get('Máquina 4 Estado', 'N/A') }}</td>
+                <td class="section-maquina">{{ fila.get('Máquina 5 Estado', 'N/A') }}</td>
+                <td class="section-maquina">{{ fila.get('Máquina 6 Estado', 'N/A') }}</td>
+
                 <!-- Cola -->
                 <td class="section-cola">{{ fila.get('Cola', 'N/A') }}</td>
+            
             </tr>
             {% endfor %}
         </tbody>
