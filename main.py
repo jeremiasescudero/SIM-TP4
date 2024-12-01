@@ -47,8 +47,9 @@ class Simulacion:
         id_actual = f"A{self.contador_alumnos}"
 
         while self.tiempo_actual < tiempo_total:
-            estado = {
-                'Evento': f'Llegada Alumno {id_actual}',
+            if(self.tiempo_actual == 0):
+                estado = {
+                'Evento': 'Inicializacion',
                 'Reloj': round(self.tiempo_actual, 2),
                 'RND Llegada': round(rnd_llegada, 2),
                 'Tiempo Llegada': round(tiempo_llegada, 2),
@@ -60,27 +61,45 @@ class Simulacion:
                 'RND Mantenimiento': 'N/A',
                 'Tiempo Mantenimiento': 'N/A',
                 'Fin Mantenimiento': 'N/A'
-            }
-
-            # Procesar llegada
-            equipo_libre = self.obtener_equipo_libre()
-            if equipo_libre:
-                equipo_libre['estado'] = EstadoEquipo.OCUPADO
-                rnd_ins, tiempo_ins = self.generar_tiempo_inscripcion()
-                equipo_libre['fin_inscripcion'] = self.tiempo_actual + tiempo_ins
-                equipo_libre['alumno_actual'] = id_actual
-                estado.update({
-                    'Máquina': equipo_libre['id'],
-                    'RND Inscripción': round(rnd_ins, 2),
-                    'Tiempo Inscripción': round(tiempo_ins, 2),
-                    'Fin Inscripción': round(equipo_libre['fin_inscripcion'], 2)
-                })
+                }
+                
+                for i, equipo in enumerate(self.equipos, 1):
+                    estado[f'Máquina {i}'] = equipo['estado'].value
             else:
-                self.cola += 1
+                estado = {
+                    'Evento': f'Llegada Alumno {id_actual}',
+                    'Reloj': round(self.tiempo_actual, 2),
+                    'RND Llegada': round(rnd_llegada, 2),
+                    'Tiempo Llegada': round(tiempo_llegada, 2),
+                    'Próxima Llegada': round(proxima_llegada, 2),
+                    'Máquina': 'N/A',
+                    'RND Inscripción': 'N/A',
+                    'Tiempo Inscripción': 'N/A',
+                    'Fin Inscripción': 'N/A',
+                    'RND Mantenimiento': 'N/A',
+                    'Tiempo Mantenimiento': 'N/A',
+                    'Fin Mantenimiento': 'N/A'
+                }
 
-            # Actualizar estado de equipos
-            for i, equipo in enumerate(self.equipos, 1):
-                estado[f'Máquina {i}'] = equipo['estado'].value
+                # Procesar llegada
+                equipo_libre = self.obtener_equipo_libre()
+                if equipo_libre:
+                    equipo_libre['estado'] = EstadoEquipo.OCUPADO
+                    rnd_ins, tiempo_ins = self.generar_tiempo_inscripcion()
+                    equipo_libre['fin_inscripcion'] = self.tiempo_actual + tiempo_ins
+                    equipo_libre['alumno_actual'] = id_actual
+                    estado.update({
+                        'Máquina': equipo_libre['id'],
+                        'RND Inscripción': round(rnd_ins, 2),
+                        'Tiempo Inscripción': round(tiempo_ins, 2),
+                        'Fin Inscripción': round(equipo_libre['fin_inscripcion'], 2)
+                    })
+                else:
+                    self.cola += 1
+
+                # Actualizar estado de equipos
+                for i, equipo in enumerate(self.equipos, 1):
+                    estado[f'Máquina {i}'] = equipo['estado'].value
 
             estado['Cola'] = self.cola
             self.resultados.append(estado)
