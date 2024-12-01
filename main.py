@@ -14,7 +14,9 @@ app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 't
 class Simulacion:
     def __init__(self, equipos=6, inf_inscripcion=5, sup_inscripcion=8, media_llegada=2.0):
         self.equipos = [{'id': i+1, 'estado': EstadoEquipo.LIBRE, 
-                        'fin_inscripcion': None} for i in range(equipos)]
+                        'fin_inscripcion': None,
+                        'fin_mantenimiento': None,
+                        'alumno_actual': None} for i in range(equipos)]
         self.inf_inscripcion = inf_inscripcion
         self.sup_inscripcion = sup_inscripcion
         self.media_llegada = media_llegada
@@ -22,6 +24,7 @@ class Simulacion:
         self.tiempo_actual = 0
         self.resultados = []
         self.contador_alumnos = 0
+        self.proximo_mantenimiento = 60
 
     def generar_tiempo_llegada(self):
         rnd = random.random()
@@ -31,6 +34,11 @@ class Simulacion:
     def generar_tiempo_inscripcion(self):
         rnd = random.random()
         tiempo = self.inf_inscripcion + (self.sup_inscripcion - self.inf_inscripcion) * rnd
+        return rnd, round(tiempo, 2)
+
+    def generar_tiempo_mantenimiento(self):
+        rnd = random.random()
+        tiempo = 3 + (10 - 3) * rnd
         return rnd, round(tiempo, 2)
 
     def obtener_equipo_libre(self):
@@ -47,6 +55,53 @@ class Simulacion:
         id_actual = f"A{self.contador_alumnos}"
 
         while self.tiempo_actual < tiempo_total:
+            # Verificar mantenimiento
+            if self.tiempo_actual >= self.proximo_mantenimiento:
+                equipo_libre = self.obtener_equipo_libre()
+                if equipo_libre:
+                    rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
+                    equipo_libre['estado'] = EstadoEquipo.MANTENIMIENTO
+                    equipo_libre['fin_mantenimiento'] = self.tiempo_actual + tiempo_mant
+                    self.resultados.append({
+                        'Evento': 'Inicio Mantenimiento',
+                        'Reloj': round(self.tiempo_actual, 2),
+                        'RND Llegada': 'N/A',
+                        'Tiempo Llegada': 'N/A',
+                        'Próxima Llegada': round(proxima_llegada, 2),
+                        'Máquina': equipo_libre['id'],
+                        'RND Inscripción': 'N/A',
+                        'Tiempo Inscripción': 'N/A',
+                        'Fin Inscripción': 'N/A',
+                        'RND Mantenimiento': round(rnd_mant, 2),
+                        'Tiempo Mantenimiento': round(tiempo_mant, 2),
+                        'Fin Mantenimiento': round(equipo_libre['fin_mantenimiento'], 2),
+                        'Cola': self.cola
+                    })
+                self.proximo_mantenimiento += 60
+
+            # Verificar fin de mantenimiento
+            for equipo in self.equipos:
+                if (equipo['estado'] == EstadoEquipo.MANTENIMIENTO and 
+                    equipo['fin_mantenimiento'] and 
+                    equipo['fin_mantenimiento'] <= self.tiempo_actual):
+                    self.resultados.append({
+                        'Evento': 'Fin Mantenimiento',
+                        'Reloj': round(equipo['fin_mantenimiento'], 2),
+                        'RND Llegada': 'N/A',
+                        'Tiempo Llegada': 'N/A',
+                        'Próxima Llegada': round(proxima_llegada, 2),
+                        'Máquina': equipo['id'],
+                        'RND Inscripción': 'N/A',
+                        'Tiempo Inscripción': 'N/A',
+                        'Fin Inscripción': 'N/A',
+                        'RND Mantenimiento': 'N/A',
+                        'Tiempo Mantenimiento': 'N/A',
+                        'Fin Mantenimiento': round(equipo['fin_mantenimiento'], 2),
+                        'Cola': self.cola
+                    })
+                    equipo['estado'] = EstadoEquipo.LIBRE
+                    equipo['fin_mantenimiento'] = None
+
             estado = {
                 'Evento': f'Llegada Alumno {id_actual}',
                 'Reloj': round(self.tiempo_actual, 2),
