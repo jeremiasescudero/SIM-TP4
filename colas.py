@@ -135,9 +135,6 @@ def simular(
     maquinas = [{'estado': 'Libre', 'fin_inscripcion': None, 'fin_mantenimiento': None} for _ in range(equipos)]
     tabla_resultados = []
 
-    # Crear una lista fija para alumnos (A1, A2, ..., Amax_cola)
-    alumnos_fijos = [{'estado': 'N/A', 'tiempo_espera': 'N/A'} for _ in range(max_cola)]
-
     # Evento inicial: primera llegada de alumno
     rnd_llegada = round(random.random(), 2)
     tiempo_llegada = round(random.expovariate(1 / media_llegada), 2)
@@ -166,9 +163,9 @@ def simular(
             'Cola': len([alumno for alumno in alumnos if alumno['estado'] == 'En cola']),
         }
 
-        # AGREGAR ESTADO DE LAS MÁQUINAS
+         # AGREGAR ESTADO DE LAS MÁQUINAS
         for i, maquina in enumerate(maquinas):
-            fila[f'Máquina {i+1} Estado'] = maquina['estado']  # Agregar el estado de cada máquina
+            fila[f'Máquina {i} Estado'] = maquina['estado']  # Agregar el estado de cada máquina
 
         # Añadir datos para cada alumno dinámicamente
         for idx, alumno in enumerate(alumnos, start=1):
@@ -189,6 +186,7 @@ def simular(
             'RND Mantenimiento': getattr(evento_actual, 'rnd_mantenimiento', 'N/A'),
             'Tiempo Mantenimiento': getattr(evento_actual, 'tiempo_mantenimiento', 'N/A'),
             'Fin Mantenimiento': getattr(evento_actual, 'hora', 'N/A'),
+            
         })
 
         tabla_resultados.append(fila)

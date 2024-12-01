@@ -1,5 +1,6 @@
+<!-- templates/resultados.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,10 +23,11 @@
         th {
             background-color: #f4f4f4;
         }
-        .section-llegada { background-color: #ffebf1; } /* Rosa claro */
-        .section-inscripcion { background-color: #e8d8ff; } /* Violeta claro */
-        .section-mantenimiento { background-color: #d8eaff; } /* Azul claro */
-        .section-cola { background-color: #fffacd; } /* Amarillo claro */
+        .section-llegada { background-color: #ffebf1; }
+        .section-inscripcion { background-color: #e8d8ff; }
+        .section-mantenimiento { background-color: #d8eaff; }
+        .section-maquina { background-color: #e0f7fa; }
+        .section-cola { background-color: #fffacd; }
     </style>
 </head>
 <body>
@@ -39,8 +41,8 @@
                 <th colspan="4" class="section-llegada">Llegada Alumno</th>
                 <th colspan="3" class="section-inscripcion">Fin Inscripción</th>
                 <th colspan="3" class="section-mantenimiento">Mantenimiento</th>
+                <th colspan="6" class="section-maquina">Estado Máquinas</th>
                 <th rowspan="2" class="section-cola">Cola</th>
-                <th rowspan="2">Estado de Equipos</th>
             </tr>
             <tr>
                 <th class="section-llegada">RND Llegada</th>
@@ -53,6 +55,12 @@
                 <th class="section-mantenimiento">RND Mantenimiento</th>
                 <th class="section-mantenimiento">Tiempo Mantenimiento</th>
                 <th class="section-mantenimiento">Fin Mantenimiento</th>
+                <th class="section-maquina">Máquina 1</th>
+                <th class="section-maquina">Máquina 2</th>
+                <th class="section-maquina">Máquina 3</th>
+                <th class="section-maquina">Máquina 4</th>
+                <th class="section-maquina">Máquina 5</th>
+                <th class="section-maquina">Máquina 6</th>
             </tr>
         </thead>
         <tbody>
@@ -61,26 +69,23 @@
                 <td>{{ loop.index }}</td>
                 <td>{{ fila['Evento'] }}</td>
                 <td>{{ fila['Reloj'] }}</td>
-                <td class="section-llegada">{{ fila.get('RND Llegada', 'N/A') }}</td>
-                <td class="section-llegada">{{ fila.get('Tiempo Llegada', 'N/A') }}</td>
-                <td class="section-llegada">{{ fila.get('Próxima Llegada', 'N/A') }}</td>
-                <td class="section-llegada">{{ fila.get('Máquina', 'N/A') }}</td>
-                <td class="section-inscripcion">{{ fila.get('RND Inscripción', 'N/A') }}</td>
-                <td class="section-inscripcion">{{ fila.get('Tiempo Inscripción', 'N/A') }}</td>
-                <td class="section-inscripcion">{{ fila.get('Fin Inscripción', 'N/A') }}</td>
-                <td class="section-mantenimiento">{{ fila.get('RND Mantenimiento', 'N/A') }}</td>
-                <td class="section-mantenimiento">{{ fila.get('Tiempo Mantenimiento', 'N/A') }}</td>
-                <td class="section-mantenimiento">{{ fila.get('Fin Mantenimiento', 'N/A') }}</td>
-                <td class="section-cola">{{ fila.get('Cola', 'N/A') }}</td>
-                <td>
-                    {% if estado_equipos %}
-                        {% for estado in estado_equipos %}
-                            <div>{{ estado }}</div>
-                        {% endfor %}
-                    {% else %}
-                        No disponible
-                    {% endif %}
-                </td>
+                <td class="section-llegada">{{ fila['RND Llegada'] }}</td>
+                <td class="section-llegada">{{ fila['Tiempo Llegada'] }}</td>
+                <td class="section-llegada">{{ fila['Próxima Llegada'] }}</td>
+                <td class="section-llegada">{{ fila['Máquina'] }}</td>
+                <td class="section-inscripcion">{{ fila['RND Inscripción'] }}</td>
+                <td class="section-inscripcion">{{ fila['Tiempo Inscripción'] }}</td>
+                <td class="section-inscripcion">{{ fila['Fin Inscripción'] }}</td>
+                <td class="section-mantenimiento">{{ fila['RND Mantenimiento'] }}</td>
+                <td class="section-mantenimiento">{{ fila['Tiempo Mantenimiento'] }}</td>
+                <td class="section-mantenimiento">{{ fila['Fin Mantenimiento'] }}</td>
+                <td class="section-maquina">{{ fila['Máquina 1'] }}</td>
+                <td class="section-maquina">{{ fila['Máquina 2'] }}</td>
+                <td class="section-maquina">{{ fila['Máquina 3'] }}</td>
+                <td class="section-maquina">{{ fila['Máquina 4'] }}</td>
+                <td class="section-maquina">{{ fila['Máquina 5'] }}</td>
+                <td class="section-maquina">{{ fila['Máquina 6'] }}</td>
+                <td class="section-cola">{{ fila['Cola'] }}</td>
             </tr>
             {% endfor %}
         </tbody>
