@@ -62,7 +62,7 @@ class Simulacion:
                     rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
                     equipo_libre['estado'] = EstadoEquipo.MANTENIMIENTO
                     equipo_libre['fin_mantenimiento'] = self.tiempo_actual + tiempo_mant
-                    self.resultados.append({
+                    estado_mant = {
                         'Evento': 'Inicio Mantenimiento',
                         'Reloj': round(self.tiempo_actual, 2),
                         'RND Llegada': 'N/A',
@@ -76,7 +76,11 @@ class Simulacion:
                         'Tiempo Mantenimiento': round(tiempo_mant, 2),
                         'Fin Mantenimiento': round(equipo_libre['fin_mantenimiento'], 2),
                         'Cola': self.cola
-                    })
+                    }
+                    # Agregar estados de máquinas para mantenimiento
+                    for i, eq in enumerate(self.equipos, 1):
+                        estado_mant[f'Máquina {i}'] = eq['estado'].value
+                    self.resultados.append(estado_mant)
                 self.proximo_mantenimiento += 60
 
             # Verificar fin de mantenimiento
@@ -84,7 +88,8 @@ class Simulacion:
                 if (equipo['estado'] == EstadoEquipo.MANTENIMIENTO and 
                     equipo['fin_mantenimiento'] and 
                     equipo['fin_mantenimiento'] <= self.tiempo_actual):
-                    self.resultados.append({
+                    equipo['estado'] = EstadoEquipo.LIBRE
+                    estado_fin_mant = {
                         'Evento': 'Fin Mantenimiento',
                         'Reloj': round(equipo['fin_mantenimiento'], 2),
                         'RND Llegada': 'N/A',
@@ -98,8 +103,11 @@ class Simulacion:
                         'Tiempo Mantenimiento': 'N/A',
                         'Fin Mantenimiento': round(equipo['fin_mantenimiento'], 2),
                         'Cola': self.cola
-                    })
-                    equipo['estado'] = EstadoEquipo.LIBRE
+                    }
+                    # Agregar estados de máquinas para fin de mantenimiento
+                    for i, eq in enumerate(self.equipos, 1):
+                        estado_fin_mant[f'Máquina {i}'] = eq['estado'].value
+                    self.resultados.append(estado_fin_mant)
                     equipo['fin_mantenimiento'] = None
 
             estado = {
@@ -145,8 +153,10 @@ class Simulacion:
                 if (equipo['estado'] == EstadoEquipo.OCUPADO and 
                     equipo['fin_inscripcion'] and 
                     equipo['fin_inscripcion'] <= proxima_llegada):
-                    self.resultados.append({
-                        'Evento': f'Fin Inscripción {equipo["alumno_actual"]}',
+                    alumno_finalizado = equipo['alumno_actual']
+                    equipo['estado'] = EstadoEquipo.LIBRE
+                    estado_fin = {
+                        'Evento': f'Fin Inscripción {alumno_finalizado}',
                         'Reloj': round(equipo['fin_inscripcion'], 2),
                         'RND Llegada': 'N/A',
                         'Tiempo Llegada': 'N/A',
@@ -159,8 +169,12 @@ class Simulacion:
                         'Tiempo Mantenimiento': 'N/A',
                         'Fin Mantenimiento': 'N/A',
                         'Cola': self.cola
-                    })
-                    equipo['estado'] = EstadoEquipo.LIBRE
+                    }
+                    # Agregar estados de máquinas para fin de inscripción
+                    for i, eq in enumerate(self.equipos, 1):
+                        estado_fin[f'Máquina {i}'] = eq['estado'].value
+                    
+                    self.resultados.append(estado_fin)
                     equipo['fin_inscripcion'] = None
                     equipo['alumno_actual'] = None
                     if self.cola > 0:
