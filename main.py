@@ -52,8 +52,18 @@ class Simulacion:
 
     def generar_tiempo_mantenimiento(self):
         rnd = random.random()
-        tiempo = 3 + (10 - 3) * rnd
+        tiempo = 3 + (10 - 3) * rnd  # Duración del mantenimiento: U(3,10) minutos
         return rnd, round(tiempo, 2)
+
+    def generar_tiempo_regreso(self):
+        rnd = random.random()
+        tiempo = 57 + (63 - 57) * rnd  # Tiempo hasta próximo mantenimiento: U(57,63) minutos
+        return rnd, round(tiempo, 2)
+
+    def generar_tiempo_regreso(self):
+        rnd = random.random()
+        tiempo_regreso = 57 + (63 - 57) * rnd  # Tiempo hasta próximo mantenimiento: U(57,63) minutos
+        return rnd, round(tiempo_regreso, 2)
 
     def obtener_equipo_libre(self):
         for equipo in self.equipos:
@@ -269,18 +279,10 @@ class Simulacion:
         equipo['estado'] = EstadoEquipo.LIBRE
         equipo['fin_mantenimiento'] = None
         
-        # Generar próximo mantenimiento solo si no hay mantenimiento en espera
-        if not self.mantenimiento_en_espera:
-            rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
-            self.proximo_mantenimiento = self.tiempo_actual + tiempo_mant
-        else:
-            # Si hay mantenimiento en espera, buscar siguiente máquina libre
-            equipo_libre = self.obtener_equipo_libre()
-            if equipo_libre:
-                self.mantenimiento_en_espera = False
-                rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
-                equipo_libre['estado'] = EstadoEquipo.MANTENIMIENTO
-                equipo_libre['fin_mantenimiento'] = self.tiempo_actual + tiempo_mant
+        # Generar el tiempo para el próximo regreso del técnico
+        rnd_regreso, tiempo_regreso = self.generar_tiempo_regreso()
+        self.proximo_mantenimiento = self.tiempo_actual + tiempo_regreso
+        self.mantenimiento_en_espera = False
 
         estado = {
             'Evento': f'Fin Mantenimiento M{equipo["id"]}',
@@ -292,8 +294,8 @@ class Simulacion:
             'RND Inscripción': 'N/A',
             'Tiempo Inscripción': 'N/A',
             'Fin Inscripción': 'N/A',
-            'RND Mantenimiento': round(rnd_mant, 2),
-            'Tiempo Mantenimiento': round(tiempo_mant, 2),
+            'RND Mantenimiento': round(rnd_regreso, 2),
+            'Tiempo Mantenimiento': round(tiempo_regreso, 2),
             'Fin Mantenimiento': 'N/A',
             'Cola': self.cola
         }
