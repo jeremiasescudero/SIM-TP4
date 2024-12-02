@@ -68,6 +68,8 @@ class Simulacion:
             if estado == EstadoAlumno.EN_COLA:
                 self.alumnos_en_cola.append(id_alumno)
                 self.tiempos_espera[id_alumno] = 0
+                # Agregar el alumno al conteo de espera inmediatamente
+                self.alumnos_con_espera += 1
         else:
             anterior_estado = self.estado_alumnos[id_alumno]
             self.estado_alumnos[id_alumno] = estado
@@ -78,12 +80,14 @@ class Simulacion:
                 self.tiempos_espera[id_alumno] = tiempo_espera
                 if tiempo_espera > 0:
                     self.tiempo_espera_total += tiempo_espera
-                    self.alumnos_con_espera += 1
 
     def calcular_tiempo_espera(self, id_alumno):
         if id_alumno in self.estado_alumnos:
             if self.estado_alumnos[id_alumno] == EstadoAlumno.EN_COLA:
-                return round(self.tiempo_actual - self.tiempo_llegada_alumnos[id_alumno], 2)
+                tiempo_espera = self.tiempo_actual - self.tiempo_llegada_alumnos[id_alumno]
+                # Actualizar el tiempo total acumulado
+                self.tiempo_espera_total += tiempo_espera
+                return round(tiempo_espera, 2)
             return round(self.tiempos_espera.get(id_alumno, 0), 2)
         return 0
 
