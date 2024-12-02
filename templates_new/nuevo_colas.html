@@ -6,111 +6,72 @@
     <title>Resultado de la Simulación</title>
     <style>
         body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .table-container {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #f4f4f4;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .section-llegada { background-color: #ffebf1; }
+        .section-inscripcion { background-color: #e8d8ff; }
+        .section-mantenimiento { background-color: #d8eaff; }
+        .section-maquina { background-color: #e0f7fa; }
+        .section-cola { background-color: #fffacd; }
+        .section-estadisticas { background-color: #ffddc1; }
+        .section-alumnos { background-color: #e8f5e9; }
 
-.table-container {
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-}
-
-thead {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: #f4f4f4;
-}
-
-th {
-    background-color: #f4f4f4;
-}
-
-.section-llegada {
-    background-color: #ffebf1;
-}
-
-.section-inscripcion {
-    background-color: #e8d8ff;
-}
-
-.section-mantenimiento {
-    background-color: #d8eaff;
-}
-
-.section-maquina {
-    background-color: #e0f7fa;
-}
-
-.section-cola {
-    background-color: #fffacd;
-}
-
-.section-estadisticas {
-    background-color: #ffddc1;
-}
-
-.section-alumnos {
-    background-color: #e8f5e9;
-}
-
-.section-proximo-mant {
-    background-color: #dcedc8;
-}
-
-.ultima-fila {
-    position: fixed;
-    bottom: 0;
-    width: calc(100% - 40px); /* Ajuste del ancho con los márgenes */
-    left: 20px;
-    right: 20px;
-    background-color: #fff3cd;
-    font-weight: bold;
-    z-index: 2;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.ultima-fila td {
-    width: auto; /* Asegura que el ancho de las celdas sea dinámico */
-    padding: 8px; /* Igual que las demás celdas */
-    text-align: center; /* Alineación uniforme */
-}
-
-
-tbody tr {
-    cursor: pointer;
-}
-
-tr.selected {
-    background-color: #fff3cd !important;
-    font-weight: bold;
-}
-
-tr.selected td {
-    background-color: inherit;
-}
-
-.sticky-row {
-    position: sticky;
-    top: 80px;
-    background-color: #fff3cd;
-    z-index: 2;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-
+        .ultima-fila {
+            position: fixed;
+            bottom: 0;
+            width: calc(100% - 40px);
+            left: 20px;
+            right: 20px;
+            background-color: #fff3cd;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+        
+        tbody tr {
+            cursor: pointer;
+        }
+        
+        tr.selected {
+            background-color: #fff3cd !important;
+            font-weight: bold;
+        }
+        
+        tr.selected td {
+            background-color: inherit;
+        }
+        
+        .sticky-row {
+            position: sticky;
+            top: 80px;
+            background-color: #fff3cd;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -125,7 +86,6 @@ tr.selected td {
                 <th colspan="3" class="section-inscripcion">Fin Inscripción</th>
                 <th colspan="3" class="section-mantenimiento">Mantenimiento</th>
                 <th colspan="6" class="section-maquina">Estado Máquinas</th>
-                <th colspan="6" class="section-proximo-mant">Próximo Mantenimiento</th>
                 <th rowspan="2" class="section-cola">Cola</th>
                 <th colspan="2" class="section-estadisticas">Estadísticas</th>
                 {% for i in range(1, tabla[0].get('max_alumnos', 1) + 1) %}
@@ -149,12 +109,6 @@ tr.selected td {
                 <th class="section-maquina">Máquina 4</th>
                 <th class="section-maquina">Máquina 5</th>
                 <th class="section-maquina">Máquina 6</th>
-                <th class="section-proximo-mant">Máq. 1</th>
-                <th class="section-proximo-mant">Máq. 2</th>
-                <th class="section-proximo-mant">Máq. 3</th>
-                <th class="section-proximo-mant">Máq. 4</th>
-                <th class="section-proximo-mant">Máq. 5</th>
-                <th class="section-proximo-mant">Máq. 6</th>
                 <th class="section-estadisticas">T.E. Acumulado</th>
                 <th class="section-estadisticas">T.E. Promedio</th>
                 {% for i in range(1, tabla[0].get('max_alumnos', 1) + 1) %}
@@ -185,12 +139,6 @@ tr.selected td {
                 <td class="section-maquina">{{ fila['Máquina 4'] }}</td>
                 <td class="section-maquina">{{ fila['Máquina 5'] }}</td>
                 <td class="section-maquina">{{ fila['Máquina 6'] }}</td>
-                <td class="section-proximo-mant">{{ fila['Próximo Mant. M1'] }}</td>
-                <td class="section-proximo-mant">{{ fila['Próximo Mant. M2'] }}</td>
-                <td class="section-proximo-mant">{{ fila['Próximo Mant. M3'] }}</td>
-                <td class="section-proximo-mant">{{ fila['Próximo Mant. M4'] }}</td>
-                <td class="section-proximo-mant">{{ fila['Próximo Mant. M5'] }}</td>
-                <td class="section-proximo-mant">{{ fila['Próximo Mant. M6'] }}</td>
                 <td class="section-cola">{{ fila['Cola'] }}</td>
                 <td class="section-estadisticas">{{ fila['Tiempo Espera Acumulado'] }}</td>
                 <td class="section-estadisticas">{{ fila['Tiempo Espera Promedio'] }}</td>
@@ -223,12 +171,6 @@ tr.selected td {
             <td class="section-maquina">{{ tabla[-1]['Máquina 4'] }}</td>
             <td class="section-maquina">{{ tabla[-1]['Máquina 5'] }}</td>
             <td class="section-maquina">{{ tabla[-1]['Máquina 6'] }}</td>
-            <td class="section-proximo-mant">{{ tabla[-1]['Próximo Mant. M1'] }}</td>
-            <td class="section-proximo-mant">{{ tabla[-1]['Próximo Mant. M2'] }}</td>
-            <td class="section-proximo-mant">{{ tabla[-1]['Próximo Mant. M3'] }}</td>
-            <td class="section-proximo-mant">{{ tabla[-1]['Próximo Mant. M4'] }}</td>
-            <td class="section-proximo-mant">{{ tabla[-1]['Próximo Mant. M5'] }}</td>
-            <td class="section-proximo-mant">{{ tabla[-1]['Próximo Mant. M6'] }}</td>
             <td class="section-cola">{{ tabla[-1]['Cola'] }}</td>
             <td class="section-estadisticas">{{ tabla[-1]['Tiempo Espera Acumulado'] }}</td>
             <td class="section-estadisticas">{{ tabla[-1]['Tiempo Espera Promedio'] }}</td>
@@ -239,28 +181,23 @@ tr.selected td {
         </tr>
     </table>
 
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const tbody = document.querySelector('tbody');
             let selectedRow = null;
-    
-            tbody.addEventListener('click', function (e) {
+            
+            tbody.addEventListener('click', function(e) {
                 const row = e.target.closest('tr');
-                if (!row) return; // Ignorar si el clic no es en una fila
-    
-                // Optimización: utilizar `requestAnimationFrame` para evitar bloqueos
+                if (!row) return;
+                
                 requestAnimationFrame(() => {
-                    // Remover selección previa
                     if (selectedRow) {
                         selectedRow.classList.remove('selected', 'sticky-row');
                     }
-    
-                    // Si clickeamos la misma fila, deseleccionar
+                    
                     if (selectedRow === row) {
                         selectedRow = null;
                     } else {
-                        // Seleccionar nueva fila
                         row.classList.add('selected', 'sticky-row');
                         selectedRow = row;
                     }
@@ -268,6 +205,5 @@ tr.selected td {
             });
         });
     </script>
-    
 </body>
 </html>
