@@ -39,7 +39,6 @@ class Simulacion:
         self.alumnos_con_espera = 0
         self.proximo_mantenimiento = None
         self.mantenimiento_en_espera = False
-
         self.proxima_computadora_mantenimiento = 0
 
     def generar_tiempo_llegada(self):
@@ -54,17 +53,12 @@ class Simulacion:
 
     def generar_tiempo_mantenimiento(self):
         rnd = random.random()
-        tiempo = 3 + (10 - 3) * rnd  # Duración del mantenimiento: U(3,10) minutos
+        tiempo = 3 + (10 - 3) * rnd
         return rnd, round(tiempo, 2)
 
     def generar_tiempo_regreso(self):
         rnd = random.random()
-        tiempo = 57 + (63 - 57) * rnd  # Tiempo hasta próximo mantenimiento: U(57,63) minutos
-        return rnd, round(tiempo, 2)
-
-    def generar_tiempo_regreso(self):
-        rnd = random.random()
-        tiempo_regreso = 57 + (63 - 57) * rnd  # Tiempo hasta próximo mantenimiento: U(57,63) minutos
+        tiempo_regreso = 57 + (63 - 57) * rnd
         return rnd, round(tiempo_regreso, 2)
 
     def obtener_equipo_libre(self):
@@ -80,7 +74,6 @@ class Simulacion:
             if estado == EstadoAlumno.EN_COLA:
                 self.alumnos_en_cola.append(id_alumno)
                 self.tiempos_espera[id_alumno] = 0
-                # Agregar el alumno al conteo de espera inmediatamente
                 self.alumnos_con_espera += 1
         else:
             anterior_estado = self.estado_alumnos[id_alumno]
@@ -97,7 +90,6 @@ class Simulacion:
         if id_alumno in self.estado_alumnos:
             if self.estado_alumnos[id_alumno] == EstadoAlumno.EN_COLA:
                 tiempo_espera = self.tiempo_actual - self.tiempo_llegada_alumnos[id_alumno]
-                # Actualizar el tiempo total acumulado
                 self.tiempo_espera_total += tiempo_espera
                 return round(tiempo_espera, 2)
             return round(self.tiempos_espera.get(id_alumno, 0), 2)
@@ -125,7 +117,7 @@ class Simulacion:
         eventos = []
         eventos.append(('llegada', self.proxima_llegada))
         
-        if self.proximo_mantenimiento and not self.mantenimiento_en_espera:
+        if self.proximo_mantenimiento:
             eventos.append(('inicio_mantenimiento', self.proximo_mantenimiento))
             
         for equipo in self.equipos:
@@ -143,10 +135,6 @@ class Simulacion:
         self.proxima_llegada = tiempo_llegada
         self.contador_alumnos = 1
         id_actual = f"A{self.contador_alumnos}"
-
-        # Inicialización - Generar primer mantenimiento
-        """rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
-        self.proximo_mantenimiento = tiempo_mant"""
 
         rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
         self.equipos[0]['estado'] = EstadoEquipo.MANTENIMIENTO
@@ -166,7 +154,6 @@ class Simulacion:
             'RND Mantenimiento': round(rnd_mant, 2),
             'Tiempo Mantenimiento': round(tiempo_mant, 2),
             'Fin Mantenimiento': round(tiempo_mant, 2)
-            #'Fin Mantenimiento': 'N/A'
         }
 
         for i, equipo in enumerate(self.equipos, 1):
@@ -186,16 +173,13 @@ class Simulacion:
                 self.proxima_llegada = self.tiempo_actual + tiempo_llegada
                 self.contador_alumnos += 1
                 id_actual = f"A{self.contador_alumnos}"
-            
             elif tipo_evento == 'inicio_mantenimiento':
                 estado = self.procesar_inicio_mantenimiento()
                 if estado is None:
                     continue
-            
             elif tipo_evento == 'fin_mantenimiento':
                 equipo = evento[2]
                 estado = self.procesar_fin_mantenimiento(equipo)
-            
             elif tipo_evento == 'fin_inscripcion':
                 equipo = evento[2]
                 estado = self.procesar_fin_inscripcion(equipo)
@@ -248,7 +232,6 @@ class Simulacion:
         return estado
 
     def procesar_inicio_mantenimiento(self):
-    # Si hay mantenimiento en espera, no generar nuevo evento
         if self.mantenimiento_en_espera:
             return None
             
@@ -287,11 +270,6 @@ class Simulacion:
         equipo['estado'] = EstadoEquipo.LIBRE
         equipo['fin_mantenimiento'] = None
         
-        # Generar el tiempo para el próximo regreso del técnico
-        #rnd_regreso, tiempo_regreso = self.generar_tiempo_regreso()
-        #self.proximo_mantenimiento = self.tiempo_actual + tiempo_regreso
-        #self.mantenimiento_en_espera = False
-
         estado = {
             'Evento': f'Fin Mantenimiento M{equipo["id"]}',
             'Reloj': round(self.tiempo_actual, 2),
@@ -302,15 +280,12 @@ class Simulacion:
             'RND Inscripción': 'N/A',
             'Tiempo Inscripción': 'N/A',
             'Fin Inscripción': 'N/A',
-            #'RND Mantenimiento': round(rnd_regreso, 2),
-            #'Tiempo Mantenimiento': round(tiempo_regreso, 2),
             'RND Mantenimiento': 'N/A',
             'Tiempo Mantenimiento': 'N/A',
             'Fin Mantenimiento': 'N/A',
             'Cola': self.cola
         }
 
-        # Iniciar mantenimiento de la siguiente computadora
         if self.proxima_computadora_mantenimiento < len(self.equipos):
             siguiente_equipo = self.equipos[self.proxima_computadora_mantenimiento]
             rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
@@ -318,11 +293,29 @@ class Simulacion:
             siguiente_equipo['fin_mantenimiento'] = self.tiempo_actual + tiempo_mant
             self.proxima_computadora_mantenimiento += 1
 
-            estado['Máquina'] = siguiente_equipo['id']
+            """estado['Máquina'] = siguiente_equipo['id']
             estado['RND Mantenimiento'] = round(rnd_mant, 2)
             estado['Tiempo Mantenimiento'] = round(tiempo_mant, 2)
-            estado['Fin Mantenimiento'] = round(siguiente_equipo['fin_mantenimiento'], 2)
+            estado['Fin Mantenimiento'] = round(siguiente_equipo['fin_mantenimiento'], 2)"""
 
+            estado.update({
+                'Máquina': siguiente_equipo['id'],
+                'RND Mantenimiento': round(rnd_mant, 2),
+                'Tiempo Mantenimiento': round(tiempo_mant, 2),
+                'Fin Mantenimiento': round(siguiente_equipo['fin_mantenimiento'], 2)
+            })
+        else:
+            # Se ha completado el mantenimiento de todas las computadoras
+            rnd_vuelta, tiempo_vuelta = self.generar_tiempo_regreso()
+            self.proximo_mantenimiento = self.tiempo_actual + tiempo_vuelta
+            self.proxima_computadora_mantenimiento = 0
+        
+            estado.update({
+                'RND Tiempo Vuelta': round(rnd_vuelta, 2),
+                'Tiempo Vuelta': round(tiempo_vuelta, 2),
+                'Próximo Inicio Mantenimiento': round(self.proximo_mantenimiento, 2)
+            })
+        
         for i, eq in enumerate(self.equipos, 1):
             estado[f'Máquina {i}'] = eq['estado'].value
         self.agregar_estados_alumnos(estado)
