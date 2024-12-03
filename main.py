@@ -40,6 +40,8 @@ class Simulacion:
         self.proximo_mantenimiento = None
         self.mantenimiento_en_espera = False
 
+        self.proxima_computadora_mantenimiento = 0
+
     def generar_tiempo_llegada(self):
         rnd = random.random()
         tiempo = -self.media_llegada * math.log(1 - rnd)
@@ -143,8 +145,13 @@ class Simulacion:
         id_actual = f"A{self.contador_alumnos}"
 
         # Inicialización - Generar primer mantenimiento
+        """rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
+        self.proximo_mantenimiento = tiempo_mant"""
+
         rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
-        self.proximo_mantenimiento = tiempo_mant
+        self.equipos[0]['estado'] = EstadoEquipo.MANTENIMIENTO
+        self.equipos[0]['fin_mantenimiento'] = tiempo_mant
+        self.proxima_computadora_mantenimiento = 1
 
         estado = {
             'Evento': 'Inicializacion',
@@ -158,7 +165,8 @@ class Simulacion:
             'Fin Inscripción': 'N/A',
             'RND Mantenimiento': round(rnd_mant, 2),
             'Tiempo Mantenimiento': round(tiempo_mant, 2),
-            'Fin Mantenimiento': 'N/A'
+            'Fin Mantenimiento': round(tiempo_mant, 2)
+            #'Fin Mantenimiento': 'N/A'
         }
 
         for i, equipo in enumerate(self.equipos, 1):
@@ -280,9 +288,9 @@ class Simulacion:
         equipo['fin_mantenimiento'] = None
         
         # Generar el tiempo para el próximo regreso del técnico
-        rnd_regreso, tiempo_regreso = self.generar_tiempo_regreso()
-        self.proximo_mantenimiento = self.tiempo_actual + tiempo_regreso
-        self.mantenimiento_en_espera = False
+        #rnd_regreso, tiempo_regreso = self.generar_tiempo_regreso()
+        #self.proximo_mantenimiento = self.tiempo_actual + tiempo_regreso
+        #self.mantenimiento_en_espera = False
 
         estado = {
             'Evento': f'Fin Mantenimiento M{equipo["id"]}',
@@ -294,11 +302,26 @@ class Simulacion:
             'RND Inscripción': 'N/A',
             'Tiempo Inscripción': 'N/A',
             'Fin Inscripción': 'N/A',
-            'RND Mantenimiento': round(rnd_regreso, 2),
-            'Tiempo Mantenimiento': round(tiempo_regreso, 2),
+            #'RND Mantenimiento': round(rnd_regreso, 2),
+            #'Tiempo Mantenimiento': round(tiempo_regreso, 2),
+            'RND Mantenimiento': 'N/A',
+            'Tiempo Mantenimiento': 'N/A',
             'Fin Mantenimiento': 'N/A',
             'Cola': self.cola
         }
+
+        # Iniciar mantenimiento de la siguiente computadora
+        if self.proxima_computadora_mantenimiento < len(self.equipos):
+            siguiente_equipo = self.equipos[self.proxima_computadora_mantenimiento]
+            rnd_mant, tiempo_mant = self.generar_tiempo_mantenimiento()
+            siguiente_equipo['estado'] = EstadoEquipo.MANTENIMIENTO
+            siguiente_equipo['fin_mantenimiento'] = self.tiempo_actual + tiempo_mant
+            self.proxima_computadora_mantenimiento += 1
+
+            estado['Máquina'] = siguiente_equipo['id']
+            estado['RND Mantenimiento'] = round(rnd_mant, 2)
+            estado['Tiempo Mantenimiento'] = round(tiempo_mant, 2)
+            estado['Fin Mantenimiento'] = round(siguiente_equipo['fin_mantenimiento'], 2)
 
         for i, eq in enumerate(self.equipos, 1):
             estado[f'Máquina {i}'] = eq['estado'].value
