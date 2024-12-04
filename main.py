@@ -146,7 +146,7 @@ class Simulacion:
             'Reloj': round(self.tiempo_actual, 2),
             'RND Llegada': round(rnd_llegada, 2),
             'Tiempo Llegada': round(tiempo_llegada, 2),
-            'Próxima Llegada': round(self.proxima_llegada, 2),
+            'Próxima Llegada': round(self.proxima_llegada + self.tiempo_actual, 2),
             'Máquina': 'N/A',
             'RND Inscripción': 'N/A',
             'Tiempo Inscripción': 'N/A',
@@ -168,11 +168,11 @@ class Simulacion:
             tipo_evento = evento[0]
 
             if tipo_evento == 'llegada':
-                estado = self.procesar_llegada(id_actual, rnd_llegada, tiempo_llegada)
                 rnd_llegada, tiempo_llegada = self.generar_tiempo_llegada()
                 self.proxima_llegada = self.tiempo_actual + tiempo_llegada
                 self.contador_alumnos += 1
                 id_actual = f"A{self.contador_alumnos}"
+                estado = self.procesar_llegada(id_actual, rnd_llegada, tiempo_llegada)
             elif tipo_evento == 'inicio_mantenimiento':
                 estado = self.procesar_inicio_mantenimiento()
                 if estado is None:
